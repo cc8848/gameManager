@@ -3,7 +3,9 @@ import request from '../utils/request'
 
 const Actions = Reflux.createActions([
     "getTempList",
-    'createSng'
+    'createSng',
+    'createTable',
+    'deleteTable'
 ]);
 
 module.exports = {
@@ -33,6 +35,35 @@ module.exports = {
                     'Content-Type': 'application/json', 
                 },
                 body: JSON.stringify(params)
+            })
+            .then((data)=>{
+                cb&&cb(data)
+            })
+        },
+
+        onCreateTable(params,cb){
+            var t = this;
+            request('/api/table/create',{ 
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(params)
+            })
+            .then((data)=>{
+                cb&&cb(data)
+            })
+        },
+
+        onDeleteTable(id,cb){
+            // 
+            var t = this;
+            request('/api/table/delete',{ 
+                method: 'POST',
+                body: {
+                    id: id 
+                },
             })
             .then((data)=>{
                 cb&&cb(data)

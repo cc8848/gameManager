@@ -4,7 +4,7 @@ import reactMixin from 'react-mixin';
 import Reflux from 'reflux';
 import LayoutPage from '../../components/LayoutPage'
 import Pubsub from 'pubsub-js';
-import { Modal, Breadcrumb,Row,Cascader,TimePicker, InputNumber, Upload, Col,Icon, Button, Form, DatePicker,Input,Select } from 'antd';
+import { Modal, Breadcrumb,Row,Cascader,TimePicker, InputNumber, Upload, Col,Icon, Button, Form, DatePicker,Input,Select,message } from 'antd';
 const FormItem = Form.Item;
 import moment from 'moment';
 const Option = Select.Option;
@@ -109,7 +109,6 @@ class _SNGTemp extends React.Component{
                 values.raiseBlind = raiseBlind[values.raiseBlindIndex] || [];
                 var _rewards = [];
                 var _rindex = 0;
-                console.log(prizeList)
                 for (var item in prizeList) {
                     _rewards.push({
                         rewardIndex: _rindex,
@@ -124,7 +123,9 @@ class _SNGTemp extends React.Component{
                 }
                 values.rewards = _rewards;
                 Actions.createSng(values,function(data){
-                    console.log(data)
+                    if (data.data === true) {
+                        message.success('SNG模板添加成功');
+                    }
                 })
             }
         });
@@ -221,7 +222,8 @@ class _SNGTemp extends React.Component{
             <LayoutPage>
                 <Breadcrumb separator=">">
                     <Breadcrumb.Item>赛事</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/#/sngtemp">SNG模板</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/#/sng">SNG模板</Breadcrumb.Item>
+                    <Breadcrumb.Item href="/#/create/sng">创建SNG模板</Breadcrumb.Item>
                 </Breadcrumb>
                 <span className="tm"/>
                 <Form onSubmit={t.handleSubmit}>
@@ -288,7 +290,6 @@ class _SNGTemp extends React.Component{
                             })(
                                 <TimePicker format="HH:mm"/>
                             )}
-                            
                         </div>
                     </FormItem>
                     <FormItem

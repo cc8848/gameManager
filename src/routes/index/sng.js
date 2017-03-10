@@ -1,7 +1,8 @@
 import React from 'react';
 import reactMixin from 'react-mixin';
 import Reflux from 'reflux';
-import { Modal, Button, Form, DatePicker,Input,Select } from 'antd';
+import moment from 'moment';
+import { Modal, Button, Form, DatePicker,Input,Select,TimePicker } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 import {Actions,Store} from '../../models/sng';
@@ -17,11 +18,23 @@ class _SNG extends React.Component{
     }
 
     handleSubmit = (e) => {
+        var t = this;
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                // TODO: submit SNG 
-                console.log('Received values of form: ', values);
+                var _showTime = moment(values.date).hour(moment(values.time).hour()).minute(moment(values.time).minute())
+                var template = {}
+                t.state.SNG.templates.map((item)=>{
+                    if (item.id === values.template) {
+                        var _jvalue = JSON.stringify(item);
+                        template = JSON.parse(_jvalue);
+                    }
+                })
+                template.showTime = _showTime.unix();
+                template.name = values.name;
+                Actions.createTable(template,function(data){
+                    console.log(data)
+                })
             }
         });
     }
@@ -53,10 +66,18 @@ class _SNG extends React.Component{
                     <FormItem
                         label="赛事显示时间:"
                         >
-                        {getFieldDecorator('time', {
-                            rules: [{ required: true, max: 20, message: '请填写赛事显示时间' }],
+                        {getFieldDecorator('date', {
+                            initialValue: moment(new Date(), 'YYYY/MM/DD'),
+                            rules: [{ required: true, message: '请填写日期' }],
                         })(
                             <DatePicker />
+                        )}
+                        <span>  -  </span>
+                        {getFieldDecorator('time', {
+                            initialValue: moment(new Date()),
+                            rules: [{ type: "object", required: true, message: '请选择时间' }],
+                        })(
+                            <TimePicker format="HH:mm"/>
                         )}
                     </FormItem>
                     <FormItem

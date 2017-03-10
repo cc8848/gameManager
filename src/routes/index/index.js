@@ -78,7 +78,7 @@ class Index extends React.Component{
                     key: 'edit',
                     render:(text)=>(
                         <div>
-                            <Popconfirm title="确认删除该行数据?" onConfirm={this.confirm} onCancel={this.cancel} okText="Yes" cancelText="No">
+                            <Popconfirm title="确认删除该行数据?" onConfirm={this.confirm.bind(this,text)} onCancel={this.cancel} okText="Yes" cancelText="No">
                                 <a className="ant-dropdown-link">删除</a>
                             </Popconfirm>
                             <span className="lm"/>
@@ -117,8 +117,11 @@ class Index extends React.Component{
         })
     }
 
-    confirm(e) {
-        Actions.getMatchList()
+    confirm(param) {
+        var id = param.id;
+        Actions.deleteTable(id,function(data){
+            console.log(data)
+        })
         message.success('Click on Yes');
     }
 

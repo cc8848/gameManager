@@ -20,11 +20,25 @@ server.post('/api/sng/create',function(req,res){
     request({
         url: config.remote_server + '/pk-web/sng/temp/add',
         method: 'POST',
+        json: true,
         form: {
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        console.log(httpResponse)
+        res.send(jsonres(200,'success',body.data || []))
+    });
+})
+
+server.post('/api/table/create',function(req,res){
+    var bodyText = JSON.stringify(req.body)
+    request({
+        url: config.remote_server + '/pk-web/sng/table/add',
+        method: 'POST',
+        json: true,
+        form: {
+            data: bodyText
+        }
+    },function(err,httpResponse,body) {
         res.send(jsonres(200,'success',body || []))
     });
 })

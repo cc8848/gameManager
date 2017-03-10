@@ -5,6 +5,7 @@ const Actions = Reflux.createActions([
     "getMatchList",
     "hideSng",
     "showSng",
+    'deleteTable',
 ]);
 
 module.exports = {
@@ -27,6 +28,21 @@ module.exports = {
                 })
                 t.updateComponent()
                 cb&&cb(_mlist)
+            })
+        },
+
+        onDeleteTable(id,cb){
+            var t = this;
+            request('/api/table/delete',{ 
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify({id: id})
+            })
+            .then((data)=>{
+                cb&&cb(data)
             })
         },
 

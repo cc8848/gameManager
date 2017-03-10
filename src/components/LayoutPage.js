@@ -41,7 +41,7 @@ class LayoutPage extends React.Component{
 				<Menu theme="dark" mode="inline" defaultOpenKeys={['sub1','sub2']} selectedKeys={t.state.selectedKeys}>
 					<SubMenu title={<span><Icon type="solution" /><span>赛事</span></span>} key="sub1">
 						<Menu.Item key="m1"><Link to="/"><Icon type="line-chart" />赛事管理</Link></Menu.Item>
-						<Menu.Item key="m2"><Link to="/sngtemp"><Icon type="file-text" />SNG模板</Link></Menu.Item>
+						<Menu.Item key="m2"><Link to="/sng"><Icon type="file-text" />SNG模板</Link></Menu.Item>
 					</SubMenu>
 					<SubMenu title={<span><Icon type="bulb" /><span>奖品配置</span></span>} key="sub2">
 						<Menu.Item key="h1"><Link to="/prize"><Icon type="plus" />创建奖品</Link></Menu.Item>
