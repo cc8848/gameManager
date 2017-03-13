@@ -5,7 +5,8 @@ const Actions = Reflux.createActions([
     "getTempList",
     'createSng',
     'createTable',
-    'deleteTable'
+    'createPrize',
+    'getPrizeList'
 ]);
 
 module.exports = {
@@ -14,6 +15,7 @@ module.exports = {
         listenables: [Actions],
         data: {
             templates: [],
+            prizeList: [],
         },
 
         onGetTempList(cb){
@@ -41,9 +43,9 @@ module.exports = {
             })
         },
 
-        onCreateTable(params,cb){
+        onCreatePrize(params,cb){
             var t = this;
-            request('/api/table/create',{ 
+            request('/api/prize/create',{ 
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -56,14 +58,25 @@ module.exports = {
             })
         },
 
-        onDeleteTable(id,cb){
-            // 
+        onGetPrizeList(cb){
             var t = this;
-            request('/api/table/delete',{ 
+            request('/api/prize/list')
+            .then((data)=>{
+                t.data.prizeList = data.data;
+                t.updateComponent()
+                cb&&cb(data)
+            })
+        },
+
+        onCreateTable(params,cb){
+            var t = this;
+            request('/api/table/create',{ 
                 method: 'POST',
-                body: {
-                    id: id 
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', 
                 },
+                body: JSON.stringify(params)
             })
             .then((data)=>{
                 cb&&cb(data)

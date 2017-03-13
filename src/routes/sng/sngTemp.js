@@ -32,6 +32,7 @@ class _SNGTemp extends React.Component{
     componentDidMount(){
         var t = this;
         Pubsub.publish('layoutCurrent','m2')
+        Actions.getPrizeList();
     }
 
     remove = (index,item) => {
@@ -401,11 +402,12 @@ class _SNGTemp extends React.Component{
                                 <Input defaultValue={t.state.prizeValue} onChange={t.handlePrizeInputChanged.bind(t)} style={{width: '35%'}}/>
                             ) : 
                             (
-                                <Select defaultValue="chip">
-                                    <Option value="chip">筹码</Option>
-                                    <Option value="diamond">钻石</Option>
-                                    <Option value="masterScore">大师分</Option>
-                                    <Option value="prizes">食物</Option>
+                                <Select defaultValue={t.state.SNG.prizeList[0].id}>
+                                    {
+                                        t.state.SNG.prizeList.map(function(item){
+                                            return <Option value={item.id}>{item.prizeName}</Option>
+                                        })
+                                    }
                                 </Select>
                             )
                         }

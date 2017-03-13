@@ -22,13 +22,13 @@ function checkStatus(response) {
  * @return {object}           An object containing either "data" or "err"
  */
 export default function request(url, options) {
-  const hide = message.loading('加载中...', 0)
+  // const hide = message.loading('加载中...', 0)
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON)
     // .then(data => ({ data }))
     .then((data)=>{
-      hide()
+      // hide()
       return data;
     })
     .catch(err => ({ err }));

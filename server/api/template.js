@@ -39,6 +39,30 @@ server.post('/api/table/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body || []))
+        res.send(jsonres(200,'success',body.data || []))
     });
 })
+
+server.post('/api/prize/create',function(req,res){
+    var bodyText = JSON.stringify(req.body)
+    request({
+        url: config.remote_server + '/pk-web/prize/create',
+        method: 'POST',
+        json: true,
+        form: {
+            data: bodyText
+        }
+    },function(err,httpResponse,body) {
+        res.send(jsonres(200,'success',body.data || []))
+    });
+})
+
+server.get('/api/prize/list',function(req,res){
+    request({
+        url: config.remote_server + '/pk-web/prize/list',
+        json: true,
+    },function(err,httpResponse,body) {
+        res.send(jsonres(200,'success',body.data || []))
+    });
+})
+// 

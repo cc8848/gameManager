@@ -28,6 +28,11 @@ class Index extends React.Component{
                     key: 'id',
                 },
                 {
+                    title: '比赛名称',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
                     title: '显示时间',
                     dataIndex: 'showTime',
                     key: 'showTime',
@@ -120,9 +125,9 @@ class Index extends React.Component{
     confirm(param) {
         var id = param.id;
         Actions.deleteTable(id,function(data){
-            console.log(data)
+            message.success('删除成功!')
+            Actions.getMatchList()
         })
-        message.success('Click on Yes');
     }
 
     componentDidMount(){
@@ -131,7 +136,7 @@ class Index extends React.Component{
     }
 
     cancel(e) {
-        message.error('Click on No');
+        message.error('取消删除');
     }
     
 

@@ -21,6 +21,7 @@ module.exports = {
             var t = this;
             request('/api/matchlist')
             .then(function(data){
+                t.data.matchList = []
                 var _mlist = data.data;
                 _mlist.map((item,index)=>{
                     item.key = index + 1;

@@ -25,6 +25,6 @@ server.post('/api/table/delete',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body || []))
+        res.send(jsonres(200,'success',body.data || []))
     });
 })

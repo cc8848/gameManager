@@ -5,6 +5,8 @@ import reactMixin from 'react-mixin';
 import Reflux from 'reflux';
 import Pubsub from 'pubsub-js';
 
+import {Actions,Store} from '../models/sng';
+
 const Option = Select.Option;
 const FormItem = Form.Item;
 
@@ -25,7 +27,11 @@ class Prize extends React.Component{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-                console.log(values)
+                values.prizeImgUrl = values.iconUrl.fileList[0].response.data;
+                delete values.iconUrl;
+                Actions.createPrize(values,function(data){
+                    console.log(data)
+                })
             }
         });
     }
@@ -75,7 +81,17 @@ class Prize extends React.Component{
                         label="奖品名称:"
                         {...formItemLayout}
                         >
-                        {getFieldDecorator('name', {
+                        {getFieldDecorator('prizeName', {
+                            rules: [{ required: true, max: 20, message: 'Please input the captcha you got!' }],
+                        })(
+                            <Input/>  
+                        )}
+                    </FormItem>
+                    <FormItem
+                        label="奖品描述:"
+                        {...formItemLayout}
+                        >
+                        {getFieldDecorator('desc', {
                             rules: [{ required: true, max: 20, message: 'Please input the captcha you got!' }],
                         })(
                             <Input/>  
@@ -97,7 +113,9 @@ class Prize extends React.Component{
 
 Prize.propTypes = {
 };
-// reactMixin.onClass(Index, Reflux.connect(Store,'Index'))
+
+reactMixin.onClass(Prize, Reflux.connect(Store,'SNG'))
+
 const _Prize = Form.create()(Prize);
 
 module.exports = _Prize;

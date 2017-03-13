@@ -7,7 +7,6 @@ module.exports = {
     },
     output: {
         path: './dist',
-        // '../cordova/www',
         publicPath: '',
         filename: 'index.js'
     },

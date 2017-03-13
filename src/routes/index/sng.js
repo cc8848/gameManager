@@ -5,6 +5,7 @@ import moment from 'moment';
 import { Modal, Button, Form, DatePicker,Input,Select,TimePicker } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
+const IndexActions = require ('../../models/index').Actions;
 import {Actions,Store} from '../../models/sng';
 import './sng.less';
 
@@ -33,7 +34,9 @@ class _SNG extends React.Component{
                 template.showTime = _showTime.unix();
                 template.name = values.name;
                 Actions.createTable(template,function(data){
-                    console.log(data)
+                    IndexActions.getMatchList(function(){
+                        IndexActions.hideSng();
+                    });
                 })
             }
         });
@@ -45,8 +48,7 @@ class _SNG extends React.Component{
     }
 
     handleCancel(){
-        const Actions = require ('../../models/index').Actions;
-        Actions.hideSng()
+        IndexActions.hideSng()
     }
 
     render(){
