@@ -10,13 +10,16 @@ server.get('/api/templates',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',[]))
+        }
     });
 })
 
 server.post('/api/sng/create',function(req,res){
     var bodyText = JSON.stringify(req.body)
-    console.log(bodyText)
     request({
         url: config.remote_server + '/pk-web/sng/temp/add',
         method: 'POST',
@@ -25,7 +28,11 @@ server.post('/api/sng/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',[]))
+        }
     });
 })
 
@@ -39,7 +46,11 @@ server.post('/api/table/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',[]))
+        }
     });
 })
 
@@ -53,7 +64,11 @@ server.post('/api/prize/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',[]))
+        }
     });
 })
 
@@ -62,7 +77,10 @@ server.get('/api/prize/list',function(req,res){
         url: config.remote_server + '/pk-web/prize/list',
         json: true,
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',[]))
+        }
     });
 })
-// 

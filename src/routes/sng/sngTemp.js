@@ -25,6 +25,7 @@ class _SNGTemp extends React.Component{
            prizeValue: '',
            prizeSelectValue: '',
            prizeModelVisible: false,
+           prizesValue: '',
            matchPicture: []
         }
     }
@@ -32,7 +33,11 @@ class _SNGTemp extends React.Component{
     componentDidMount(){
         var t = this;
         Pubsub.publish('layoutCurrent','m2')
-        Actions.getPrizeList();
+        Actions.getPrizeList(function(data){
+            t.setState({
+                prizesValue: data[0]
+            })
+        });
     }
 
     remove = (index,item) => {
@@ -51,14 +56,18 @@ class _SNGTemp extends React.Component{
     }
 
     handleAddPrizeOK = () =>{
-        if (!!!this.state.prizeValue){
-            return
-        }
+        console.log(this.state.prizeType)
+        console.log(this.state.prizesValue)
+        // if (!!!this.state.prizeValue || !!!this.state.prizesValue){
+        //     return
+        // }
         if (typeof prizeList[prizeIndex] != 'object') {
             prizeList[prizeIndex] = {}
         }
         if (this.state.prizeType === 'chip' || this.state.prizeType === 'diamond'||this.state.prizeType === 'masterScore') {
             prizeList[prizeIndex][this.state.prizeType] = this.state.prizeValue;
+        } else if (this.state.prizeType === 'prizes') {
+            prizeList[prizeIndex][this.state.prizeType] = this.state.prizesValue.prizeName;
         }
         this.setState({
             prizeModelVisible: false
@@ -69,6 +78,10 @@ class _SNGTemp extends React.Component{
         this.setState({
             prizeValue: e.target.value
         })
+    }
+
+    handlePrizesChanged=(e)=>{
+        console.log(e)
     }
 
     handleAddPrizeCancel = () =>{
@@ -175,6 +188,8 @@ class _SNGTemp extends React.Component{
                                         break;
                                         case 'masterScore': 
                                             return (<span>大师分</span>)
+                                        case 'prizes': 
+                                        return (<span>实物</span>)
                                         break;
                                     }
                                 })()
@@ -402,10 +417,10 @@ class _SNGTemp extends React.Component{
                                 <Input defaultValue={t.state.prizeValue} onChange={t.handlePrizeInputChanged.bind(t)} style={{width: '35%'}}/>
                             ) : 
                             (
-                                <Select defaultValue={t.state.SNG.prizeList[0].id}>
+                                <Select value={t.state.prizesValue}>
                                     {
                                         t.state.SNG.prizeList.map(function(item){
-                                            return <Option value={item.id}>{item.prizeName}</Option>
+                                            return <Option value={item}>{item.prizeName}</Option>
                                         })
                                     }
                                 </Select>

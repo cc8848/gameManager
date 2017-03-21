@@ -9,7 +9,11 @@ server.get('/api/matchlist',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',null))
+        }
     });
 })
 
@@ -25,6 +29,10 @@ server.post('/api/table/delete',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        res.send(jsonres(200,'success',body.data || []))
+        if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',null))
+        }
     });
 })

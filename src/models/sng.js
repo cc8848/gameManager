@@ -64,7 +64,7 @@ module.exports = {
             .then((data)=>{
                 t.data.prizeList = data.data;
                 t.updateComponent()
-                cb&&cb(data)
+                cb&&cb(data.data)
             })
         },
 
