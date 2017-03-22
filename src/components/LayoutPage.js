@@ -38,7 +38,7 @@ class LayoutPage extends React.Component{
 				<div className="logo">
 					<span>传奇扑克游戏后台</span>
 				</div>
-				<Menu theme="dark" mode="inline" defaultOpenKeys={['sub1','sub2']} selectedKeys={t.state.selectedKeys}>
+				<Menu theme="dark" mode="inline" defaultOpenKeys={['sub1','sub2','sub3']} selectedKeys={t.state.selectedKeys}>
 					<SubMenu title={<span><Icon type="solution" /><span>赛事</span></span>} key="sub1">
 						<Menu.Item key="m1"><Link to="/"><Icon type="line-chart" />赛事管理</Link></Menu.Item>
 						<Menu.Item key="m2"><Link to="/sng"><Icon type="file-text" />SNG模板</Link></Menu.Item>
@@ -46,6 +46,10 @@ class LayoutPage extends React.Component{
 					<SubMenu title={<span><Icon type="bulb" /><span>奖品配置</span></span>} key="sub2">
 						<Menu.Item key="h1"><Link to="/prize"><Icon type="plus" />创建奖品</Link></Menu.Item>
 						<Menu.Item key="h2"><Icon type="clock-circle-o" />发奖记录</Menu.Item>
+					</SubMenu>
+					<SubMenu title={<span><Icon type="pay-circle" /><span>充值管理</span></span>} key="sub3">
+						<Menu.Item key="s3_1"><Link to="/recharge"><Icon type="clock-circle-o" />充值记录</Link></Menu.Item>
+						<Menu.Item key="s3_2"><Link to="/gold"><Icon type="clock-circle-o" />金币发放记录</Link></Menu.Item>
 					</SubMenu>
 				</Menu>
 				</Sider>

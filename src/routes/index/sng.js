@@ -7,7 +7,6 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const IndexActions = require ('../../models/index').Actions;
 import {Actions,Store} from '../../models/sng';
-import './sng.less';
 
 class _SNG extends React.Component{
     constructor(props){
@@ -62,7 +61,7 @@ class _SNG extends React.Component{
                 onCancel={t.handleCancel.bind(this)}
                 visible={t.props.visible}
                 footer={[]}
-                className="createSng"
+                className="hideFooter"
                 >
                 <Form onSubmit={t.handleSubmit.bind(t)} id="sngForm">
                     <FormItem
