@@ -15,12 +15,66 @@ class Gold extends React.Component{
         this.state = {
            ModelVisible: false,
            svalue: '',
+           columns: [
+               {
+                    title: 'ID',
+                    dataIndex: 'id',
+                    key: 'id',
+                },
+                {
+                    title: '用户ID',
+                    dataIndex: 'userId',
+                    key: 'userId',
+                },
+                {
+                    title: '微信昵称 | 游戏昵称',
+                    render:(value)=>(
+                        <span>{value.wxName} | {value.userName}</span>
+                    ),
+                    key: 'userName',
+                },
+                {
+                    title: '手机号',
+                    dataIndex: 'userPhone',
+                    key: 'userPhone',
+                },
+                {
+                    title: '操作人',
+                    render:(value)=>(
+                        <span>Admin</span>
+                    ),
+                    key: 'admin',
+                },
+                {
+                    title: '发放金币数',
+                    dataIndex: 'moneyNum',
+                    key: 'moneyNum',
+                },
+                {
+                    title: '描述',
+                    dataIndex: 'changeDesc',
+                    key: 'changeDesc',
+                },
+           ]
         }
     }
 
     componentDidMount(){
         Pubsub.publish('layoutCurrent','s3_2')
         Actions.getUserList();
+        Actions.getRechargeList();
+    }
+
+    search(key){
+        var tmp = [];
+        this.state.Recharge.userList.map(function(i){
+            if (i.phone.match(key) && i.phone.match(key).length > 0){
+                tmp.push(
+                    <Option value={i.phone}>{i.phone} ({i.wxName} | {i.userName})</Option>
+                )
+            }
+        })
+        return tmp;
     }
 
     handleAddGold=()=> {
@@ -40,9 +94,14 @@ class Gold extends React.Component{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
-               console.log(values)
-               t.setState({
-                   ModelVisible: false
+               Actions.addGold(values,function(data){
+                    if (data.data === true) {
+                        message.success('金币发放成功!')
+                        Actions.getRechargeList();
+                        t.setState({
+                            ModelVisible: false
+                        })
+                    }
                })
             }
         });
@@ -68,7 +127,10 @@ class Gold extends React.Component{
                         <Button icon="plus" type="primary" onClick={t.handleAddGold}>发放金币</Button>
                     </Col>
                 </Row>
-
+                <span className="tm"/>
+                <Row>
+                    <Table dataSource={t.state.Recharge.chargeList} columns={t.state.columns} />
+                </Row>
                 <Modal 
                     visible={t.state.ModelVisible}
                     title="金币发放"
@@ -80,7 +142,7 @@ class Gold extends React.Component{
                         <FormItem
                         label="手机号:"
                         >
-                            {getFieldDecorator('userMobile', {
+                            {getFieldDecorator('mobile', {
                                 rules: [{required: true, message: '请选择手机号' }],
                             })(
                                 <Select
@@ -94,11 +156,7 @@ class Gold extends React.Component{
                                     style={{width: '100%'}}
                                     >
                                     {
-                                        t.state.Recharge.userList.map(function(i){
-                                            return (
-                                                <Option value={i.phone}>{i.phone} ({i.wxName} | {i.userName})</Option>
-                                            )
-                                        })
+                                        t.search(t.state.svalue)
                                     }
                                 </Select>
                             )}
@@ -106,7 +164,7 @@ class Gold extends React.Component{
                          <FormItem
                             label="金币数:"
                             >
-                            {getFieldDecorator('golden', {
+                            {getFieldDecorator('number', {
                                 initialValue: '0',
                                 rules: [{required: true, message: '请输入金币数量' }],
                             })(

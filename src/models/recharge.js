@@ -3,6 +3,9 @@ import request from '../utils/request'
 
 const Actions = Reflux.createActions([
     "getUserList",
+    "addGold",
+    "getRechargeList",
+    'getPayList'
 ]);
 
 module.exports = {
@@ -10,7 +13,9 @@ module.exports = {
     Store: Reflux.createStore({
         listenables: [Actions],
         data: {
-            userList: []
+            userList: [],
+            chargeList: [],
+            payList: []
         },
 
         onGetUserList(cb) {
@@ -19,7 +24,42 @@ module.exports = {
             .then((data)=>{
                 t.data.userList = data.data;
                 t.updateComponent()
+                cb&&cb(data.data)
+            })
+        },
+
+        onAddGold(params,cb){
+            var t = this;
+            request('/api/charge',{
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(params)
+            })
+            .then((data)=>{
                 cb&&cb(data)
+            })
+        },
+
+        onGetRechargeList(cb){
+            var t = this;
+            request('/api/charge/list')
+            .then((data)=>{
+                t.data.chargeList = data.data;
+                t.updateComponent()
+                cb&&cb(data.data)
+            })
+        },
+
+        onGetPayList(cb){
+            var t = this;
+            request('/api/pay/list')
+            .then((data)=>{
+                t.data.payList = data.data;
+                t.updateComponent()
+                cb&&cb(data.data)
             })
         },
 

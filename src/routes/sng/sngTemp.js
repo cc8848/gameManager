@@ -118,8 +118,8 @@ class _SNGTemp extends React.Component{
                 values.createTime = moment().unix(); 
                 values.iconUrl = t.state.matchPicture[0].response.data;
                 values.signUpFeeType = values.serviceFeeType;
-                var _showTime = moment(values.showTime).hour(moment(values.showTime2).hour()).minute(moment(values.showTime2).minute())
-                values.showTime = _showTime.unix();
+                // var _showTime = moment(values.showTime).hour(moment(values.showTime2).hour()).minute(moment(values.showTime2).minute())
+                // values.showTime = _showTime.unix();
                 values.raiseBlind = raiseBlind[values.raiseBlindIndex] || [];
                 var _rewards = [];
                 var _rindex = 0;
@@ -288,7 +288,7 @@ class _SNGTemp extends React.Component{
                             </Select>
                         )}
                     </FormItem>
-                    <FormItem
+                    {/*<FormItem
                         label="展示时间:"
                         {...formItemLayout}
                         >
@@ -307,7 +307,7 @@ class _SNGTemp extends React.Component{
                                 <TimePicker format="HH:mm"/>
                             )}
                         </div>
-                    </FormItem>
+                    </FormItem>*/}
                     <FormItem
                         label="涨盲时间:"
                         {...formItemLayout}

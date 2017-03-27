@@ -5,7 +5,7 @@ import reactMixin from 'react-mixin';
 import Reflux from 'reflux';
 import Pubsub from 'pubsub-js';
 
-// import {Actions,Store} from '../models/sng';
+import {Actions,Store} from '../../models/recharge';
 
 // const Option = Select.Option;
 // const FormItem = Form.Item;
@@ -23,31 +23,31 @@ class Recharge extends React.Component{
                 },
                 {
                     title: '充值时间',
-                    dataIndex: 'date',
-                    key: 'date',
+                    dataIndex: 'payTime',
+                    key: 'payTime',
                 },
                 {
                     title: '用户ID',
-                    dataIndex: 'userid',
-                    key: 'userid',
+                    dataIndex: 'userId',
+                    key: 'userId',
                 },
                 {
                     title: '姓名',
-                    dataIndex: 'name',
-                    key: 'name',
+                    dataIndex: 'userName',
+                    key: 'userName',
                 }, {
                     title: '手机',
-                    dataIndex: 'mobile',
-                    key: 'mobile',
+                    dataIndex: 'userPhone',
+                    key: 'userPhone',
                 },{
                     title: '充值方式',
-                    dataIndex: 'payway',
-                    key: 'payway',
+                    dataIndex: 'payStyle',
+                    key: 'payStyle',
                 },
                 {
                     title: '金币充值',
-                    key: 'goldnum',
-                    dataIndex: 'goldnum',
+                    key: 'payPrice',
+                    dataIndex: 'payPrice',
                 }
             ],
         }
@@ -55,6 +55,7 @@ class Recharge extends React.Component{
 
     componentDidMount(){
         Pubsub.publish('layoutCurrent','s3_1')
+        Actions.getPayList()
     }
 
     render(){
@@ -95,7 +96,7 @@ class Recharge extends React.Component{
                 </Row>
                 <span className="tm"/>
                 <Row>
-                    <Table columns={t.state.columns} />
+                    <Table columns={t.state.columns} dataSource={t.state.Recharge.payList}/>
                 </Row>
             </LayoutPage>
         )
@@ -105,7 +106,7 @@ class Recharge extends React.Component{
 Recharge.propTypes = {
 };
 
-// reactMixin.onClass(_Name_, Reflux.connect(Store,'SNG'))
+reactMixin.onClass(Recharge, Reflux.connect(Store,'Recharge'))
 
 // const __Name_ = Form.create()(_Name_);
 

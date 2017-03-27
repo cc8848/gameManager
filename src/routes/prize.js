@@ -30,7 +30,9 @@ class Prize extends React.Component{
                 values.prizeImgUrl = values.iconUrl.fileList[0].response.data;
                 delete values.iconUrl;
                 Actions.createPrize(values,function(data){
-                    console.log(data)
+                   if (data.data === true) {
+                        message.success('礼物添加成功');
+                    }
                 })
             }
         });

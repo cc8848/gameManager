@@ -65,6 +65,7 @@ server.post('/api/prize/create',function(req,res){
         }
     },function(err,httpResponse,body) {
         if (!!!err) {
+            console.log(body)
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
