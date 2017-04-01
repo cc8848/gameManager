@@ -10,6 +10,7 @@ server.get('/api/templates',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
+        console.log(body)
         if (!!!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
@@ -28,6 +29,7 @@ server.post('/api/sng/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
+        console.log(body)
         if (!!!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
@@ -79,6 +81,25 @@ server.get('/api/prize/list',function(req,res){
         json: true,
     },function(err,httpResponse,body) {
         if (!!!err) {
+            res.send(jsonres(200,'success',body.data || []))
+        } else {
+            res.send(jsonres(-1,'faild',[]))
+        }
+    });
+})
+
+server.post('/api/prize/delete',function(req,res){
+    var bodyText = JSON.stringify(req.body)
+    request({
+        url: config.remote_server + '/pk-web/prize/delete',
+        method: 'POST',
+        json: true,
+        form: {
+            data: bodyText
+        }
+    },function(err,httpResponse,body) {
+        if (!!!err) {
+            console.log(body)
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))

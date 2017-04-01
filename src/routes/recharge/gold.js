@@ -93,16 +93,21 @@ class Gold extends React.Component{
         var t = this;
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
+            if (values.number.toString() === '0') {
+                return message.error('金币数量不能为0')
+            }
             if (!err) {
-               Actions.addGold(values,function(data){
-                    if (data.data === true) {
-                        message.success('金币发放成功!')
-                        Actions.getRechargeList();
-                        t.setState({
-                            ModelVisible: false
-                        })
-                    }
-               })
+                if (confirm('你确定要给手机号: '+ values.mobile + '发放:' + values.number + '金币吗?')) {  
+                    Actions.addGold(values,function(data){
+                        if (data.data === true) {
+                            message.success('金币发放成功!')
+                            Actions.getRechargeList();
+                            t.setState({
+                                ModelVisible: false
+                            })
+                        }
+                    })
+                }
             }
         });
     }
@@ -171,7 +176,7 @@ class Gold extends React.Component{
                                <Input/>
                             )}
                         </FormItem>
-                        <Button key="submit" hidden="true" type="primary" htmlType="submit" size="large">提交</Button>
+                        <Button key="submit" hidden="true" type="primary" htmlType="submit" size="large">提交</Button>    
                     </Form>
                 </Modal>
             </LayoutPage>

@@ -14,12 +14,62 @@ class Prize extends React.Component{
     constructor(props){
         super(props)
         this.state = {
-           prizePicture: []
+           prizePicture: [],
+           columns: [
+                {
+                    title: 'ID',
+                    dataIndex: 'id',
+                    key: 'id',
+                },
+                {
+                    title: '名称',
+                    dataIndex: 'prizeName',
+                    key: 'prizeName',
+                },
+                {
+                    title: '缩略图',
+                    key: 'prizeImgUrl',
+                    dataIndex: 'prizeImgUrl',
+                    /*render: (value)=>{
+                        <div>
+                            {console.log(value.prizeImgUrl)}
+                            <img  style={{ width: '100%' }} src={value.prizeImgUrl}/>
+                        </div>
+                    }*/
+                },
+                {
+                    title: '描述',
+                    dataIndex: 'desc',
+                    key: 'desc',
+                }, {
+                    title: '价格',
+                    dataIndex: 'price',
+                    key: 'price',
+                },{
+                    title: '状态',
+                    dataIndex: 'status',
+                    key: 'status',
+                },
+                {
+                    title: '操作',
+                    key: 'edit',
+                    render:(value)=>(
+                        <div>
+                            <Popconfirm title="确认删除该行数据?" onConfirm={this.handleDelete.bind(this,value.id)} okText="Yes" cancelText="No">
+                                <a className="ant-dropdown-link">删除</a>
+                            </Popconfirm>
+                            <span className="lm"/>
+                            <a className="ant-dropdown-link">编辑</a>
+                        </div>
+                    )
+                },
+           ],
         }
     }
 
     componentDidMount(){
         Pubsub.publish('layoutCurrent','h1')
+        Actions.getPrizeList()
     }
 
     handleSubmit = (e) => {
@@ -36,6 +86,13 @@ class Prize extends React.Component{
                 })
             }
         });
+    }
+
+    handleDelete(value){
+        message.error('删除功能尚未实现')
+        // Actions.deletePrize({
+        //     prizeTypeId: value
+        // })
     }
 
     render(){
@@ -108,6 +165,7 @@ class Prize extends React.Component{
                         </Button>
                     </FormItem> 
                 </Form>
+                <Table columns={t.state.columns} dataSource={t.state.SNG.prizeList}/>
             </LayoutPage>
         )
     }

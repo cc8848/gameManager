@@ -4,7 +4,7 @@ import reactMixin from 'react-mixin';
 import Reflux from 'reflux';
 import LayoutPage from '../../components/LayoutPage'
 import Pubsub from 'pubsub-js';
-import { Modal, Breadcrumb,Row,Cascader,TimePicker, InputNumber, Upload, Col,Icon, Button, Form, DatePicker,Input,Select,message } from 'antd';
+import { Modal, Breadcrumb,Row,Cascader,TimePicker,Table, InputNumber, Upload, Col,Icon, Button, Form, DatePicker,Input,Select,message } from 'antd';
 const FormItem = Form.Item;
 import moment from 'moment';
 const Option = Select.Option;
@@ -13,10 +13,6 @@ import {Actions,Store} from '../../models/sng';
 import './sngTemp.less';
 // 盲注结构表
 var raiseBlind = require('./raiseBlind')
-let uuid = 0;
-let prizeList = {};
-let rankUuid = 0;
-let prizeIndex = 0;
 class _SNGTemp extends React.Component{
     constructor(props){
         super(props)
@@ -26,7 +22,72 @@ class _SNGTemp extends React.Component{
            prizeSelectValue: '',
            prizeModelVisible: false,
            prizesValue: '',
-           matchPicture: []
+           prizesList: [], // 实物奖品列表
+           prizeNum: 1, // 实物奖品数量
+           matchPicture: [],
+           prizesColumns: [
+               {
+                    title: '名次',
+                    dataIndex: 'rewardIndex',
+                    key: 'rewardIndex',
+               },
+               {
+                    title: '奖励类型',
+                    render:(value)=>(
+                        <div className="ant-dropdown-link">
+                            {
+                                (()=>{
+                                    switch(value.type){
+                                        case 'chip':
+                                        return '筹码'
+                                        break;
+                                        case 'diamond':
+                                        return '钻石'
+                                        break;
+                                        case 'masterScore':
+                                        return '大师分'
+                                        break;
+                                        case 'prizes':
+                                        return '实物'
+                                        break;
+                                    }
+                                })()
+                            }
+                        </div>
+                    ),
+                    key: 'type',
+               },
+               {
+                    title: 'value',
+                    render:(value)=>(
+                        <a className="ant-dropdown-link">
+                            {
+                                (()=>{
+                                    if (value.type === 'prizes') {
+                                        return <div>
+                                            {value.rewardPrizes.map(function(item){
+                                               return `${item.prizeName}(${item.prizeNum})`
+                                            })}
+                                            <br/>
+                                        </div>
+                                    }
+                                })()
+                            }
+                        </a>
+                    ),
+                    key: 'value',
+               },
+               {
+                    title: '操作',
+                    render:(value)=>(
+                        <div>
+                            <a className="ant-dropdown-link" onClick={t.state.update(value.rewardIndex)}>增加</a><br/>
+                            <a className="ant-dropdown-link">删除</a>
+                        </div>
+                    ),
+                    key: 'edit',
+               },
+           ]
         }
     }
 
@@ -35,7 +96,7 @@ class _SNGTemp extends React.Component{
         Pubsub.publish('layoutCurrent','m2')
         Actions.getPrizeList(function(data){
             t.setState({
-                prizesValue: data[0]
+                prizesValue: JSON.stringify(data[0])
             })
         });
     }
@@ -56,22 +117,45 @@ class _SNGTemp extends React.Component{
     }
 
     handleAddPrizeOK = () =>{
-        console.log(this.state.prizeType)
-        console.log(this.state.prizesValue)
-        // if (!!!this.state.prizeValue || !!!this.state.prizesValue){
-        //     return
-        // }
-        if (typeof prizeList[prizeIndex] != 'object') {
-            prizeList[prizeIndex] = {}
-        }
+        var t = this;
+        var rewardIndex = t.state.prizesList.length;
         if (this.state.prizeType === 'chip' || this.state.prizeType === 'diamond'||this.state.prizeType === 'masterScore') {
-            prizeList[prizeIndex][this.state.prizeType] = this.state.prizeValue;
+            t.state.prizesList.push({
+                "rewardIndex": rewardIndex,
+                "chip": t.state.prizeType === 'chip' ? Number(t.state.prizeValue) : 0,
+                "diamond": t.state.prizeType === 'diamond' ? Number(t.state.prizeValue) : 0,
+                "des": "",
+                "masterScore": t.state.prizeType === 'masterScore' ? Number(t.state.prizeValue) : 0,
+                "rewardPrizes": [],
+                "type": this.state.prizeType
+            })
         } else if (this.state.prizeType === 'prizes') {
-            prizeList[prizeIndex][this.state.prizeType] = this.state.prizesValue.prizeName;
+            var obj = JSON.parse(this.state.prizesValue)
+            obj.num = t.state.prizeNum
+            t.state.prizesList.push({
+                "rewardIndex": rewardIndex,
+                "chip": 0,
+                "diamond": 0,
+                "des": "",
+                "masterScore": 0,
+                "rewardPrizes": [],
+                "type": this.state.prizeType
+            })
+            t.state.prizesList[t.state.prizesList.length-1].rewardPrizes.push({
+                prizeName: obj.prizeName,
+                prizeNum: t.state.prizeNum,
+                prizeIcon: obj.prizeImgUrl,
+                prizeId2: "",
+                prizeType: 0
+            })
+            
+            // return obj;
         }
-        this.setState({
+        t.setState({
             prizeModelVisible: false
         })
+        console.log(t.state.prizesList)
+        console.log('这步完成')
     }
 
     handlePrizeInputChanged=(e)=>{
@@ -89,15 +173,11 @@ class _SNGTemp extends React.Component{
             prizeModelVisible: false
         })
     }
-
-    addRank = () => {
-        rankUuid++;
-        const { form } = this.props;
-        const keys = form.getFieldValue('rankKeys');
-        const nextKeys = keys.concat(rankUuid);
-        form.setFieldsValue({
-            rankKeys: nextKeys,
-        });
+    
+    handleShowAddModel = () => {
+        this.setState({
+            prizeModelVisible: true
+        })
     }
 
     removeRank = (k,index) => {
@@ -118,8 +198,6 @@ class _SNGTemp extends React.Component{
                 values.createTime = moment().unix(); 
                 values.iconUrl = t.state.matchPicture[0].response.data;
                 values.signUpFeeType = values.serviceFeeType;
-                // var _showTime = moment(values.showTime).hour(moment(values.showTime2).hour()).minute(moment(values.showTime2).minute())
-                // values.showTime = _showTime.unix();
                 values.raiseBlind = raiseBlind[values.raiseBlindIndex] || [];
                 var _rewards = [];
                 var _rindex = 0;
@@ -131,17 +209,34 @@ class _SNGTemp extends React.Component{
                         masterScore: prizeList[item].masterScore ? prizeList[item].masterScore : 0,
                         des: "",
                         // TODO 等礼物接口完了 再搞这个
-                        rewardPrizes: []
+                        rewardPrizes: {
+                            id: prizeList[item].prizes.id,
+                            prizeName: prizeList[item].prizes.prizeName,
+                            prizeNum: prizeList[item].prizes.num
+                        }
                     })
                     _rindex ++;
                 }
                 values.rewards = _rewards;
+                console.log(values)
                 Actions.createSng(values,function(data){
                     if (data.data === true) {
                         message.success('SNG模板添加成功');
                     }
                 })
             }
+        });
+    }
+
+    prizeSelectChanged(value){
+        this.setState({
+            prizesValue: value,
+        });
+    }
+
+    prizeNumChanged=(e)=>{
+         this.setState({
+            prizeNum: e.target.value,
         });
     }
 
@@ -169,12 +264,12 @@ class _SNGTemp extends React.Component{
         const rankKeys = getFieldValue('rankKeys');
         
         // 奖品模板
-        const prizeItems = function(index){
+        /*const prizeItems = function(index){
             var t = this;
             var dom = [];
             for (var item in prizeList[index]) {
                 dom.push(
-                     <Row gutter={10}>
+                     <Row gutter={20}>
                         <Col span={5}/>
                         <Col span={5}>
                             {
@@ -196,7 +291,9 @@ class _SNGTemp extends React.Component{
                             }
                         </Col>
                         <Col span={5}>
-                            {prizeList[index][item]}
+                            {
+                                typeof prizeList[index][item] === 'object' ? prizeList[index][item].prizeName + `(${prizeList[index][item].num}个)` : prizeList[index][item]
+                            }
                         </Col>
                         <Col span={5}>
                            <Button size="small" onClick={()=> t.remove(index,item)}>删除</Button>
@@ -205,9 +302,9 @@ class _SNGTemp extends React.Component{
                 )
             }
             return dom;
-        }
+        }*/
 
-        // 名次模板
+        /*// 名次模板
         const rankItems = rankKeys.map((k, index)=>{
             var t = this;
             return (
@@ -227,7 +324,7 @@ class _SNGTemp extends React.Component{
                 {prizeItems.bind(t,index)()}
                 </div>
             )
-        })
+        })*/
         // 奖励类型
         var prizeTypeChanged = function(value){
             this.setState({
@@ -288,26 +385,6 @@ class _SNGTemp extends React.Component{
                             </Select>
                         )}
                     </FormItem>
-                    {/*<FormItem
-                        label="展示时间:"
-                        {...formItemLayout}
-                        >
-                        <div>
-                            {getFieldDecorator('showTime', {
-                                initialValue: moment(new Date(), 'YYYY/MM/DD'),
-                                rules: [{ type: "object", required: true, message: '请选择展示日期' }],
-                            })(
-                                <DatePicker format="YYYY/MM/DD" />
-                            )}
-                            <span>  -  </span>
-                            {getFieldDecorator('showTime2', {
-                                initialValue: moment(new Date()),
-                                rules: [{ type: "object", required: true, message: '请选择展示时间' }],
-                            })(
-                                <TimePicker format="HH:mm"/>
-                            )}
-                        </div>
-                    </FormItem>*/}
                     <FormItem
                         label="涨盲时间:"
                         {...formItemLayout}
@@ -374,8 +451,6 @@ class _SNGTemp extends React.Component{
                                     <Option value="2">钻石</Option>
                                 </Select>
                             )}
-                                
-                            
                             </InputGroup>
                         
                     </FormItem>
@@ -383,11 +458,13 @@ class _SNGTemp extends React.Component{
                         label="奖励:"
                         {...formItemLayout}
                         >
-                        {rankItems}
-                        <span className="tm"/>
-                        <Button type="dashed" style={{ width: '60%' }} onClick={this.addRank}>
-                            <Icon type="plus"/> 新增名次
+                        {/*{rankItems}*/}
+                        <Button type="dashed" onClick={this.handleShowAddModel}>
+                            <Icon type="plus"/> 新增奖励
                         </Button>
+                        <span className="tm"/>
+                        <Table columns={t.state.prizesColumns} dataSource={t.state.prizesList} size="small"></Table>
+                        
                     </FormItem>
                     <FormItem
                         label="操作:"
@@ -404,8 +481,8 @@ class _SNGTemp extends React.Component{
                     onOk={t.handleAddPrizeOK}
                     onCancel={t.handleAddPrizeCancel}
                     >
-                    <InputGroup compact size="normal">
-                        <Select defaultValue={t.state.prizeType} onChange={prizeTypeChanged.bind(t)}>
+                    {/*<InputGroup compact size="normal">*/}
+                        {/*<Select defaultValue={t.state.prizeType} onChange={prizeTypeChanged.bind(t)}>
                             <Option value="chip">筹码</Option>
                             <Option value="diamond">钻石</Option>
                             <Option value="masterScore">大师分</Option>
@@ -417,16 +494,58 @@ class _SNGTemp extends React.Component{
                                 <Input defaultValue={t.state.prizeValue} onChange={t.handlePrizeInputChanged.bind(t)} style={{width: '35%'}}/>
                             ) : 
                             (
-                                <Select value={t.state.prizesValue}>
+                                <Select value={t.state.prizesValue} onChange={t.prizeSelectChanged.bind(t)}>
                                     {
                                         t.state.SNG.prizeList.map(function(item){
-                                            return <Option value={item}>{item.prizeName}</Option>
+                                            return (<Option value={JSON.stringify(item)}>{item.prizeName}</Option>)
                                         })
                                     }
                                 </Select>
                             )
                         }
-                    </InputGroup>
+                        {
+                            (()=> {
+                                if (t.state.prizeType === 'prizes'){
+                                    return (<Input placeholder="奖品数量" onChange={t.prizeNumChanged.bind(t)} defaultValue={t.state.prizeNum} style={{width: '20%'}}/>)
+                                }
+                            })()
+                        }
+                        
+                    </InputGroup>*/}
+                    <Form>
+                        <FormItem
+                            label="筹码:"
+                            >
+                            <Input placeholder="赛事名" style={{ width: 150 }}/>
+                        </FormItem>
+                        <FormItem
+                            label="钻石:"
+                            >
+                            <Input placeholder="赛事名" style={{ width: 150 }}/>
+                        </FormItem>
+                        <FormItem
+                            label="大师分:"
+                            >
+                            <Input placeholder="赛事名" style={{ width: 150 }}/>
+                        </FormItem>
+                        <FormItem
+                            label="实物奖励:"
+                            >
+                            <Select tags
+                                style={{ width: '100%' }}
+                                searchPlaceholder="标签模式"
+                                value={t.state.prizesValue}
+                                onChange={t.prizeSelectChanged.bind(t)}
+                            >
+                                {
+                                    t.state.SNG.prizeList.map(function(item){
+                                        return (<Option value={JSON.stringify(item)}>{item.prizeName}</Option>)
+                                    })
+                                }
+                            </Select>
+                        </FormItem>
+                    </Form>
+                <span className="tm"/>
                 </Modal>
             </LayoutPage>
         )

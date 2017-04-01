@@ -6,7 +6,8 @@ const Actions = Reflux.createActions([
     'createSng',
     'createTable',
     'createPrize',
-    'getPrizeList'
+    'getPrizeList',
+    'deletePrize'
 ]);
 
 module.exports = {
@@ -65,6 +66,21 @@ module.exports = {
                 t.data.prizeList = data.data;
                 t.updateComponent()
                 cb&&cb(data.data)
+            })
+        },
+
+        onDeletePrize(params,cb){
+            var t = this;
+            request('/api/prize/delete',{ 
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify(params)
+            })
+            .then((data)=>{
+                cb&&cb(data)
             })
         },
 
