@@ -1,7 +1,8 @@
 {
     "dev_server_port": 8171,
     "user_db": "mongodb://127.0.0.1:27017/gameManager",
-    "remote_server": "http://192.168.1.220:8088",
+    // "remote_server": "http://192.168.1.220:8088",
+    "remote_server": "http://game.legendpoker.cn:8088",
     "pwdSalt": "dsfjlflsjglsj;lgj7987891313is62m",
     "redis_host": {
        "host" : "127.0.0.1",
