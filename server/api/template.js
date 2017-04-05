@@ -10,7 +10,6 @@ server.get('/api/templates',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
-        console.log(body)
         if (!!!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
@@ -48,6 +47,7 @@ server.post('/api/table/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
+        console.log(body)
         if (!!!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {

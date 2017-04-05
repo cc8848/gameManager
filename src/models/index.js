@@ -27,6 +27,7 @@ module.exports = {
                     item.key = index + 1;
                     t.data.matchList.push(item);
                 })
+                t.data.matchList.reverse()
                 t.updateComponent()
                 cb&&cb(_mlist)
             })

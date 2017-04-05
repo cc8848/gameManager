@@ -49,7 +49,7 @@ class Index extends React.Component{
                     title: '盲注表',
                     key: 'raiseBlind',
                     render:(value)=>(
-                        <a href="#" className="ant-dropdown-link" onClick={this.showBlindList.bind(this,value)}>查看</a>
+                        <a className="ant-dropdown-link" onClick={this.showBlindList.bind(this,value)}>查看</a>
                     )
                 },
                 {
@@ -60,30 +60,30 @@ class Index extends React.Component{
                 {
                     title: '奖励',
                     key: 'prize',
-                    render:(text)=>(
-                        <a href="#" className="ant-dropdown-link">查看</a>
+                    render:(value)=>(
+                        <a className="ant-dropdown-link" onClick={this.showRewardsList.bind(this,value)}>查看</a>
                     )
                 },
                 {
                     title: '参赛选手',
                     key: 'users',
-                    render:(text)=>(
-                        <a href="#" className="ant-dropdown-link">查看</a>
+                    render:(value)=>(
+                        <a className="ant-dropdown-link">查看</a>
                     )
                 },
                 {
                     title: '操作人',
                     key: 'operator',
-                    render:(text)=>(
+                    render:(value)=>(
                         <span>Admin</span>
                     )
                 },
                 {
                     title: '操作',
                     key: 'edit',
-                    render:(text)=>(
+                    render:(value)=>(
                         <div>
-                            <Popconfirm title="确认删除该行数据?" onConfirm={this.confirm.bind(this,text)} onCancel={this.cancel} okText="Yes" cancelText="No">
+                            <Popconfirm title="确认删除该行数据?" onConfirm={this.confirm.bind(this,value)} onCancel={this.cancel} okText="Yes" cancelText="No">
                                 <a className="ant-dropdown-link">删除</a>
                             </Popconfirm>
                             <span className="lm"/>
@@ -108,6 +108,58 @@ class Index extends React.Component{
                 </div>
                 
             )
+        });
+    }
+
+    showRewardsList(data){
+        Modal.info({
+            title: '奖励',
+            content: (
+                <div>{
+                    (()=>{
+                    var doms = [];
+                    data.rewards.map(function(ri,i){
+                        doms.push(<p>第{i+1}名:</p>);
+                        for (var item in ri) {
+                            if (item !== 'randomKey' && item !== 'id' && item !== 'rewardIndex' && item !== 'des'){
+                                doms.push(<span>{
+                                    (()=>{
+                                        switch(item){
+                                            case 'chip':
+                                            return '筹码: '
+                                            break;
+                                            case 'diamond':
+                                            return '钻石: '
+                                            break;
+                                            case 'masterScore':
+                                            return '大师分: '
+                                            break;
+                                            case 'rewardPrizes':
+                                            return '实物: '
+                                            break;
+                                        }
+                                    })()
+                                }{ 
+                                (()=>{
+                                    if (typeof ri[item] === 'object') {
+                                        if (ri[item].length <=0) {
+                                            return <span>无实物奖品</span>
+                                        }
+                                        return ri[item].map(function(i){
+                                            return <span>{i.prizeName}({i.prizeNum}个),</span>
+                                        })
+                                    } else {
+                                        return ri[item]
+                                    }
+                                    })()
+                                }<br/></span>)   
+                            }
+                        }
+                        doms.push(<div><hr/><br/></div>)
+                    })
+                    return doms;
+                    })()
+                }</div>)
         });
     }
 

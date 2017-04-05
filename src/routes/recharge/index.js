@@ -23,7 +23,10 @@ class Recharge extends React.Component{
                 },
                 {
                     title: '充值时间',
-                    dataIndex: 'payTime',
+                    render: (value)=>{
+                        return (new Date(Number(value.payTime)).toDateString())
+                        // return ())
+                    },
                     key: 'payTime',
                 },
                 {

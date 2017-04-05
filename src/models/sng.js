@@ -23,7 +23,7 @@ module.exports = {
             var t = this;
             request('/api/templates')
             .then((data)=>{
-                t.data.templates = data.data;
+                t.data.templates = data.data.reverse();
                 t.updateComponent()
                 cb&&cb(t.data.templates)
             })
@@ -63,7 +63,7 @@ module.exports = {
             var t = this;
             request('/api/prize/list')
             .then((data)=>{
-                t.data.prizeList = data.data;
+                t.data.prizeList = data.data.reverse();
                 t.updateComponent()
                 cb&&cb(data.data)
             })
