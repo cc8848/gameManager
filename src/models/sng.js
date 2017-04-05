@@ -50,7 +50,7 @@ module.exports = {
 
         onEditSng(params,cb){
             var t = this;
-            request('/api/sng/edit',{ 
+            request('/api/table/edit',{ 
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -64,7 +64,6 @@ module.exports = {
         },
 
         onSetTempObj(temp,cb){
-
             this.data.tempObj = temp;
             this.updateComponent()
             cb&&cb(this.data.tempObj)
