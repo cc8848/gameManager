@@ -1,5 +1,5 @@
 import {message} from 'antd';
-
+var fetch = require('fetch-polyfill2')
 function parseJSON(response) {
   return response.json();
 }

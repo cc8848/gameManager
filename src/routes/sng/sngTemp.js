@@ -42,6 +42,7 @@ class _SNGTemp extends React.Component{
            tempPrizesObj: {
                randomKey: '',
                chip: 0,
+               desc: '',
                diamond: 0,
                masterScore: 0,
                rewardPrizes: []
@@ -75,8 +76,10 @@ class _SNGTemp extends React.Component{
         })
         t.state.prizesList.push(t.state.tempPrizesObj);
         t.state.tempPrizesObj = {
+            randomKey: Math.random(),
             chip: 0,
             diamond: 0,
+            desc: '',
             masterScore: 0,
             rewardPrizes: []
         }
@@ -121,13 +124,13 @@ class _SNGTemp extends React.Component{
                     _rewards.push({
                         rewardIndex: i,
                         chip: item.chip,
+                        desc: '',
                         diamond: item.diamond,
                         masterScore: item.masterScore,
                         rewardPrizes: item.rewardPrizes
                     })
                 })
                 values.rewards = _rewards;
-                console.log(values)
                 Actions.createSng(values,function(data){
                     if (data.data === true) {
                         message.success('SNG模板添加成功');
@@ -305,7 +308,7 @@ class _SNGTemp extends React.Component{
                                 (()=>{
                                     var doms = [];
                                     for (var item in record) {
-                                        if (item !== 'randomKey'){
+                                        if (item !== 'randomKey' && item !== 'desc'){
                                             doms.push(<span>{
                                                 (()=>{
                                                     switch(item){

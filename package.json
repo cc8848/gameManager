@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.23.0",
+    "fetch-polyfill2": "0.0.3",
     "react-scripts": "0.9.3"
   },
   "scripts": {
