@@ -46,12 +46,33 @@ class _SNGTemp extends React.Component{
                diamond: 0,
                masterScore: 0,
                rewardPrizes: []
-           }
+           },
+           isEdit: false,
         }
     }
 
     componentDidMount(){
         var t = this;
+        if (this.props.params.id) {
+            t.setState({
+                isEdit: true,
+                matchPicture: [{
+                    uid: -1,
+                    name: 'edit.png',
+                    status: 'done',
+                    url: t.state.SNG.tempObj.iconUrl,
+                }],
+                prizesList: (()=>{
+                    var array = [];
+                    t.state.SNG.tempObj.rewards.map(function(item){
+                        item.randomKey = Math.random();
+                        array.push(item);
+                    })
+                    return array;
+                })(),
+            })
+            console.log(t.state.SNG.tempObj)
+        }
         Pubsub.publish('layoutCurrent','m2')
         Actions.getPrizeList(function(data){
             t.setState({
@@ -113,9 +134,10 @@ class _SNGTemp extends React.Component{
         e.preventDefault();
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                console.log(values)
                 values.maxPlayer = values.minPlayer;
                 values.createTime = moment().unix(); 
-                values.iconUrl = t.state.matchPicture[0].response.data;
+                values.iconUrl = t.state.matchPicture[0];
                 values.signUpFeeType = values.serviceFeeType;
                 values.raiseBlind = raiseBlind[values.raiseBlindIndex] || [];
                 var _rewards = [];
@@ -130,17 +152,32 @@ class _SNGTemp extends React.Component{
                         rewardPrizes: item.rewardPrizes
                     })
                 })
+                
                 values.rewards = _rewards;
-                Actions.createSng(values,function(data){
-                    if (data.data === true) {
-                        message.success('SNG模板添加成功');
-                        setTimeout(function(){
-                            window.location.href = '/#/sng'
-                        })
-                    } else {
-                        message.error('SNG模板创建失败');
-                    }
-                })
+                if (t.state.isEdit) {
+                    values.id = t.state.SNG.tempObj.id
+                    Actions.editSng(values,function(data){
+                        if (data.data === true) {
+                            message.success('SNG模板修改成功');
+                            setTimeout(function(){
+                                window.location.href = '/#/sng'
+                            })
+                        } else {
+                            message.error('SNG模板修改失败');
+                        }
+                    })
+                } else {
+                    Actions.createSng(values,function(data){
+                        if (data.data === true) {
+                            message.success('SNG模板添加成功');
+                            setTimeout(function(){
+                                window.location.href = '/#/sng'
+                            })
+                        } else {
+                            message.error('SNG模板创建失败');
+                        }
+                    })
+                }
             }
         });
     }
@@ -177,7 +214,7 @@ class _SNGTemp extends React.Component{
                 <Breadcrumb separator=">">
                     <Breadcrumb.Item>赛事</Breadcrumb.Item>
                     <Breadcrumb.Item href="/#/sng">SNG模板</Breadcrumb.Item>
-                    <Breadcrumb.Item href="/#/create/sng">创建SNG模板</Breadcrumb.Item>
+                    <Breadcrumb.Item>{t.state.isEdit ? '编辑' : '创建'}SNG模板</Breadcrumb.Item>
                 </Breadcrumb>
                 <span className="tm"/>
                 <Form onSubmit={t.handleSubmit}>
@@ -186,7 +223,7 @@ class _SNGTemp extends React.Component{
                         {...formItemLayout}
                         >
                         {getFieldDecorator('iconUrl', {
-                            rules: [{ type: 'object', required: true, max: 20, message: '请上传赛事图片' }],
+                            rules: [{ type: 'object', required: true, message: '请上传赛事图片' }],
                         })(
                             <Upload {...props}>
                                 <Button>
@@ -200,6 +237,7 @@ class _SNGTemp extends React.Component{
                         {...formItemLayout}
                         >
                         {getFieldDecorator('name', {
+                            initialValue: t.state.SNG.tempObj.name,
                             rules: [{ required: true, max: 20, message: '请填写SNG模板名称' }],
                         })(
                             <Input style={{width: 'auto'}}/>
@@ -210,7 +248,7 @@ class _SNGTemp extends React.Component{
                         {...formItemLayout}
                         >
                         {getFieldDecorator('minPlayer', {
-                            initialValue: '9',
+                            initialValue: t.state.SNG.tempObj.maxPlayer||9,
                             rules: [{required: true, message: '请选择拍桌人数' }],
                         })(
                            <Select style={{width: 'auto'}}>
@@ -231,9 +269,10 @@ class _SNGTemp extends React.Component{
                         {...formItemLayout}
                         >
                         {getFieldDecorator('raiseBlindTime', {
-                            rules: [{ required: true, max: 20, message: '请填写涨盲时间' }],
+                            initialValue: t.state.SNG.tempObj.raiseBlindTime || 0,
+                            rules: [{ required: true, message: '请填写涨盲时间' }],
                         })(
-                            <Input  min={1} max={10} style={{width: 'auto'}}/>
+                            <Input type="number" style={{width: 'auto'}}/>
                         )}
                         <span className="lm"/>
                         <span className="ant-form-text">秒</span>
@@ -243,9 +282,10 @@ class _SNGTemp extends React.Component{
                         {...formItemLayout}
                         >
                         {getFieldDecorator('buyIn', {
-                            rules: [{ required: true, max: 20, message: '请填写初始积分' }],
+                            initialValue: t.state.SNG.tempObj.buyIn || 0,
+                            rules: [{ required: true, message: '请填写初始积分' }],
                         })(
-                            <Input min={1} max={10} style={{width: 'auto'}}/>
+                            <Input type="number" style={{width: 'auto'}}/>
                         )}
                         <span className="lm"/>
                         <span className="ant-form-text">分</span>
@@ -271,13 +311,13 @@ class _SNGTemp extends React.Component{
                         >
                             <InputGroup compact size="normal">
                             {getFieldDecorator('signUpFee', {
-                                initialValue: 0,
+                                initialValue: t.state.SNG.tempObj.signUpFee||0,
                                 rules: [{required: true, message: '请填写报名费' }],
                             })(
-                                <Input type="number" placeholder="报名费" style={{width: '35%'}}/>
+                                <Input defaultValue={t.state.SNG.tempObj.signUpFee} type="number" placeholder="报名费" style={{width: '35%'}}/>
                             )}
                             {getFieldDecorator('serviceFee', {
-                                initialValue: 0,
+                                initialValue: t.state.SNG.tempObj.serviceFee||0,
                                 rules: [{required: true, message: '请填写服务费' }],
                             })(
                                 <Input type="number" placeholder="服务费" style={{width: '35%'}}/>
@@ -286,7 +326,7 @@ class _SNGTemp extends React.Component{
                                 initialValue: '1',
                                 rules: [{required: true, message: '请选择类型' }],
                             })(
-                                <Select style={{width: '30%'}}>
+                                <Select defaultValue={t.state.SNG.tempObj.serviceFeeType} style={{width: '30%'}}>
                                     <Option value="1">筹码</Option>
                                     <Option value="2">钻石</Option>
                                 </Select>
@@ -308,7 +348,7 @@ class _SNGTemp extends React.Component{
                                 (()=>{
                                     var doms = [];
                                     for (var item in record) {
-                                        if (item !== 'randomKey' && item !== 'desc'){
+                                        if (item !== 'randomKey' && item !== 'id' && item !== 'rewardIndex' && item !== 'des'){
                                             doms.push(<span>{
                                                 (()=>{
                                                     switch(item){

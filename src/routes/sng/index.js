@@ -4,7 +4,7 @@ import LayoutPage from '../../components/LayoutPage'
 import Reflux from 'reflux';
 import {Link} from 'react-router'
 import Pubsub from 'pubsub-js';
-import { Modal, Button,Table,Breadcrumb,Popconfirm,Row, Col, } from 'antd';
+import { Modal, Button, message ,Table,Breadcrumb,Popconfirm,Row, Col, } from 'antd';
 import {Actions,Store} from '../../models/sng';
 
 class SNG extends React.Component{
@@ -61,16 +61,35 @@ class SNG extends React.Component{
                     key: 'edit',
                     render:(text)=>(
                        <div>
-                            <Popconfirm title="确认删除该行数据?" okText="Yes" cancelText="No">
+                            <Popconfirm title="确认删除该行数据?" okText="Yes" onConfirm={this.handleDeleteTemp.bind(this,text.id)} cancelText="No">
                                 <a className="ant-dropdown-link">删除</a>
                             </Popconfirm>
                             <span className="lm"/>
-                            <a className="ant-dropdown-link">编辑</a>
+                            <a className="ant-dropdown-link" onClick={this.handleEdit.bind(this,text)}>编辑</a>
                         </div>
                     )
                 }
             ]
         }
+    }
+
+    handleDeleteTemp(id){
+        Actions.deleteTable({
+            tableId: id
+        },function(data){
+            if (data.data === true) {
+                message.success('删除模板成功');
+                Actions.getTempList()
+            } else {
+                message.error('删除模板失败');
+            }
+        })
+    }
+
+    handleEdit(obj){
+        Actions.setTempObj(obj,function(){
+            window.location.href="/#/edit/sng/"+obj.id;
+        })
     }
 
     componentDidMount(){

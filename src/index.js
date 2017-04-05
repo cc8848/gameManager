@@ -15,6 +15,7 @@ ReactDOM.render(
       <Route path="/" component={Index}/>
       <Route path="/sng" component={SNG}/>
       <Route path="/create/sng" component={SNGTemp}/>
+      <Route path="/edit/sng/:id" component={SNGTemp}/>
       <Route path="/prize" component={Prize}/>
       <Route path="/recharge" component={Recharge}/>
       <Route path="/gold" component={Gold}/>
