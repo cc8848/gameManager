@@ -34,7 +34,9 @@ class Index extends React.Component{
                 },
                 {
                     title: '显示时间',
-                    dataIndex: 'showTime',
+                    render: (value)=>{
+                        return (new Date(value.showTime*1000).toLocaleDateString().replace(/\//g, "-") + ' ' + (new Date(value.showTime*1000)).toTimeString().substr(0, 8))
+                    },
                     key: 'showTime',
                 }, {
                     title: '涨盲时间(秒)',
@@ -53,8 +55,10 @@ class Index extends React.Component{
                     )
                 },
                 {
-                    title: '报名费(元)',
-                    dataIndex: 'signUpFee',
+                    title: '报名费(万)',
+                    render:(value)=>(
+                        value.signUpFee/10000 + '万'
+                    ),
                     key: 'signUpFee',
                 },
                 {
@@ -126,7 +130,7 @@ class Index extends React.Component{
                                     (()=>{
                                         switch(item){
                                             case 'chip':
-                                            return '筹码: '
+                                            return '金币: '
                                             break;
                                             case 'diamond':
                                             return '钻石: '

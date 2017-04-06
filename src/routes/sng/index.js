@@ -38,8 +38,10 @@ class SNG extends React.Component{
                         <a className="ant-dropdown-link" onClick={this.showBlindList.bind(this,value)}>查看</a>
                     )
                 },,{
-                    title: '报名费',
-                    dataIndex: 'signUpFee',
+                    title: '报名费(万)',
+                     render:(value)=>(
+                        value.signUpFee/10000 + '万'
+                    ),
                     key: 'signUpFee',
                 },
                 {
@@ -87,9 +89,7 @@ class SNG extends React.Component{
     }
 
     handleEdit(obj){
-        Actions.setTempObj(obj,function(){
-            window.location.href="/#/edit/sng/"+obj.id;
-        })
+        window.location.href="/#/edit/sng/"+obj.id;
     }
 
     componentDidMount(){
@@ -128,7 +128,7 @@ class SNG extends React.Component{
                                     (()=>{
                                         switch(item){
                                             case 'chip':
-                                            return '筹码: '
+                                            return '金币: '
                                             break;
                                             case 'diamond':
                                             return '钻石: '

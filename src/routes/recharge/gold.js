@@ -47,7 +47,9 @@ class Gold extends React.Component{
                 },
                 {
                     title: '发放金币数',
-                    dataIndex: 'moneyNum',
+                    render:(value)=>(
+                        <span>{value.moneyNum / 10000}万</span>
+                    ),
                     key: 'moneyNum',
                 },
                 {
@@ -97,7 +99,8 @@ class Gold extends React.Component{
                 return message.error('金币数量不能为0')
             }
             if (!err) {
-                if (confirm('你确定要给手机号: '+ values.mobile + '发放:' + values.number + '金币吗?')) {  
+                if (confirm('你确定要给手机号: '+ values.mobile + ' 发放: ' + values.number + ' 万金币吗?')) {
+                    values.number = values.number * 10000;
                     Actions.addGold(values,function(data){
                         if (data.data === true) {
                             message.success('金币发放成功!')
@@ -167,7 +170,7 @@ class Gold extends React.Component{
                             )}
                         </FormItem>
                          <FormItem
-                            label="金币数:"
+                            label="金币数(万):"
                             >
                             {getFieldDecorator('number', {
                                 initialValue: '0',

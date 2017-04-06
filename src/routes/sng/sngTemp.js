@@ -18,7 +18,7 @@ class _SNGTemp extends React.Component{
         super(props)
         this.state = {
            prizeModelVisible: false,
-           prizesValue: [],
+           prizesValue: [], // 实物奖品默认值以及选中的值
            prizesList: [], // 实物奖品列表
            prizeNum: 1, // 实物奖品数量
            matchPicture: [],
@@ -35,6 +35,7 @@ class _SNGTemp extends React.Component{
                     render:(value)=>(
                         <div>
                             <Button size="small" className="ant-dropdown-link" onClick={this.handleDeletePrizes.bind(this,value.randomKey)}>删除</Button>
+                            &nbsp;
                             <Button size="small" className="ant-dropdown-link" onClick={this.handleEditPrizes.bind(this,value.randomKey)}>编辑</Button>
                         </div>
                     ),
@@ -59,24 +60,25 @@ class _SNGTemp extends React.Component{
     componentDidMount(){
         var t = this;
         if (this.props.params.id) {
-            t.setState({
-                isEdit: true,
-                matchPicture: [{
-                    uid: -1,
-                    name: 'edit.png',
-                    status: 'done',
-                    url: t.state.SNG.tempObj.iconUrl,
-                }],
-                prizesList: (()=>{
-                    var array = [];
-                    t.state.SNG.tempObj.rewards.map(function(item){
-                        item.randomKey = Math.random();
-                        array.push(item);
-                    })
-                    return array;
-                })(),
+            Actions.getTempInfo(this.props.params.id,(data)=>{
+                t.setState({
+                    isEdit: true,
+                    matchPicture: [{
+                        uid: -1,
+                        name: 'edit.png',
+                        status: 'done',
+                        url: t.state.SNG.tempObj.iconUrl,
+                    }],
+                    prizesList: (()=>{
+                        var array = [];
+                        t.state.SNG.tempObj.rewards.map(function(item){
+                            item.randomKey = Math.random();
+                            array.push(item);
+                        })
+                        return array;
+                    })(),
+                })
             })
-            console.log(t.state.SNG.tempObj)
         }
         Pubsub.publish('layoutCurrent','m2')
         Actions.getPrizeList();
@@ -87,14 +89,20 @@ class _SNGTemp extends React.Component{
         t.state.tempPrizesObj.rewardPrizes = [];
         t.state.prizesValue.map(function(item){
             var obj = JSON.parse(item);
+            obj.prizeId2 = '';
+            obj.prizeType = 0;
+            if (obj.hasOwnProperty('title')) {
+                obj.prizeId2 = obj.id;
+                obj.prizeType = 2;
+            }
             t.state.tempPrizesObj.randomKey = Math.random()
             t.state.tempPrizesObj.rewardPrizes.push({
-                prizeId: obj.id,
-                prizeName: obj.prizeName,
+                prizeId: obj.hasOwnProperty('title') ? 0 : obj.id,
+                prizeName: obj.prizeName || obj.title,
                 prizeNum: t.state.prizeNum,
-                prizeIcon: obj.prizeImgUrl,
-                prizeId2: "",
-                prizeType: 0
+                prizeIcon: obj.prizeImgUrl || '',
+                prizeId2: obj.prizeId2,
+                prizeType: obj.prizeType
             })
         })
         if (t.state.isEditPrizes && t.state.editKey) {
@@ -119,8 +127,6 @@ class _SNGTemp extends React.Component{
                 masterScore: 0,
                 rewardPrizes: []
             }
-        },function(){
-            console.log(t.state.prizesList)
         })
     }
 
@@ -163,7 +169,16 @@ class _SNGTemp extends React.Component{
     handleAddPrizeCancel = () =>{
         this.setState({
             prizeModelVisible: false,
-            isEditPrizes: false
+            isEditPrizes: false,
+            prizesValue: [],
+            tempPrizesObj: {
+                randomKey: Math.random(),
+                chip: 0,
+                diamond: 0,
+                desc: '',
+                masterScore: 0,
+                rewardPrizes: []
+            }
         })
     }
     
@@ -185,13 +200,15 @@ class _SNGTemp extends React.Component{
                 values.createTime = moment().unix(); 
                 values.iconUrl = typeof t.state.matchPicture[0].url === 'string' ? t.state.matchPicture[0].url : t.state.matchPicture[0].response.data;
                 values.signUpFeeType = values.serviceFeeType;
+                values.signUpFee = values.signUpFee * 10000;
+                values.serviceFee = values.serviceFee * 10000;
                 values.raiseBlind = raiseBlind[values.raiseBlindIndex] || [];
                 var _rewards = [];
                 var _rindex = 0;
                 t.state.prizesList.map(function(item,i){
                     _rewards.push({
                         rewardIndex: i,
-                        chip: item.chip,
+                        chip: item.chip * 10000,
                         desc: '',
                         diamond: item.diamond,
                         masterScore: item.masterScore,
@@ -337,40 +354,39 @@ class _SNGTemp extends React.Component{
                         {...formItemLayout}
                         >
                         {getFieldDecorator('raiseBlindIndex', {
-                            initialValue: '0',
+                            initialValue: 0,
                             rules: [{required: true, message: '请选择盲注结构' }],
                         })(
                             <Select style={{width: 'auto'}}>
-                                <Option value="0">标准</Option>
+                                <Option value={0}>标准</Option>
                             </Select>
                         )}
                         <span className="lm"/>
                         <Button size="small">查看</Button>
                     </FormItem>
                     <FormItem
-                        label="报名费:"
+                        label="报名费(万):"
                         {...formItemLayout}
                         >
                             <InputGroup compact size="normal">
                             {getFieldDecorator('signUpFee', {
-                                initialValue: t.state.SNG.tempObj.signUpFee||0,
+                                initialValue: (t.state.SNG.tempObj.signUpFee)||0,
                                 rules: [{required: true, message: '请填写报名费' }],
                             })(
-                                <Input defaultValue={t.state.SNG.tempObj.signUpFee} type="number" placeholder="报名费" style={{width: '35%'}}/>
+                                <Input defaultValue={t.state.SNG.tempObj.signUpFee} type="number" placeholder="报名费/万" style={{width: '35%'}}/>
                             )}
                             {getFieldDecorator('serviceFee', {
-                                initialValue: t.state.SNG.tempObj.serviceFee||0,
+                                initialValue: (t.state.SNG.tempObj.serviceFee) ||0,
                                 rules: [{required: true, message: '请填写服务费' }],
                             })(
-                                <Input type="number" placeholder="服务费" style={{width: '35%'}}/>
+                                <Input type="number" placeholder="服务费/万" style={{width: '35%'}}/>
                             )}
                             {getFieldDecorator('serviceFeeType', {
-                                initialValue: '1',
+                                initialValue: 1,
                                 rules: [{required: true, message: '请选择类型' }],
                             })(
                                 <Select defaultValue={t.state.SNG.tempObj.serviceFeeType} style={{width: '30%'}}>
-                                    <Option value="1">筹码</Option>
-                                    <Option value="2">钻石</Option>
+                                    <Option value={1}>金币/万</Option>
                                 </Select>
                             )}
                             </InputGroup>
@@ -392,13 +408,12 @@ class _SNGTemp extends React.Component{
                                 (()=>{
                                     var doms = [];
                                     for (var item in record) {
-                                        console.log(item)
                                         if (item !== 'randomKey' && item !== 'id' && item !== 'rewardIndex' && item !== 'desc' && item !== 'des' && item !== 'diamond'){
-                                            doms.push(<span>{
+                                            doms.push(<span className={typeof record[item] === 'object' ? 'prize_content' : ''}>{
                                                 (()=>{
                                                     switch(item){
                                                         case 'chip':
-                                                        return '筹码: '
+                                                        return '金币: '
                                                         break;
                                                         case 'diamond':
                                                         return '钻石: '
@@ -415,10 +430,10 @@ class _SNGTemp extends React.Component{
                                                 (()=>{
                                                     if (typeof record[item] === 'object') {
                                                         return record[item].map(function(i){
-                                                            return <span>{i.prizeName}({i.prizeNum}个),</span>
+                                                            return <span className={i.prizeId2 ? 'prize_label ticket' : 'prize_label'}>{i.prizeId2 ? '[优惠券] ':'[实物] '}{i.prizeName}(*{i.prizeNum})</span>
                                                         })
                                                     }else {
-                                                        return record[item]
+                                                        return (record[item] + (item === 'chip' ? ' 万':''))
                                                     }
                                                 })() 
                                             }<br/></span>)   
@@ -446,22 +461,17 @@ class _SNGTemp extends React.Component{
                     >
                     <Form>
                         <FormItem
-                            label="筹码:"
+                            label="金币/万:"
                             >
-                            <Input type="Number" value={t.state.tempPrizesObj.chip} onChange={t.handleModelInputChanged.bind(event,'chip')} placeholder="筹码" style={{ width: 150 }}/>
+                            <Input type="Number" value={t.state.tempPrizesObj.chip} onChange={t.handleModelInputChanged.bind(event,'chip')} placeholder="金币/万" style={{ width: 150 }}/>
                         </FormItem>
-                        {/*<FormItem
-                            label="钻石:"
-                            >
-                            <Input type="Number" value={t.state.tempPrizesObj.diamond} onChange={t.handleModelInputChanged.bind(event,'diamond')} placeholder="钻石" style={{ width: 150 }}/>
-                        </FormItem>*/}
                         <FormItem
                             label="大师分:"
                             >
                             <Input type="Number" value={t.state.tempPrizesObj.masterScore} onChange={t.handleModelInputChanged.bind(event,'masterScore')} placeholder="大师分" style={{ width: 150 }}/>
                         </FormItem>
                         <FormItem
-                            label="实物奖励:"
+                            label="奖励(实物 & 优惠券):"
                             >
                             {
                                 t.state.SNG.prizeList.length > 0 ? (<Select tags
@@ -472,7 +482,7 @@ class _SNGTemp extends React.Component{
                             >
                                 {
                                     t.state.SNG.prizeList.map(function(item){
-                                        return (<Option value={JSON.stringify(item)}>{item.prizeName}</Option>)
+                                        return (<Option value={JSON.stringify(item)}>{item.prizeName ? (<div><span style={{color: 'green'}}>[实物] </span>{item.prizeName}</div>) : (<div><span style={{color: 'red'}}>[优惠券] </span>{item.title}</div>)}</Option>)
                                     })
                                 }
                             </Select>) : (<span>没有实物奖品,请手动添加 <a href="/#/prize">点击添加奖品</a></span>)

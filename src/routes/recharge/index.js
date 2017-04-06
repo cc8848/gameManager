@@ -24,8 +24,9 @@ class Recharge extends React.Component{
                 {
                     title: '充值时间',
                     render: (value)=>{
-                        return (new Date(Number(value.payTime)).toDateString())
-                        // return ())
+                        // return (new Date(Number(value.payTime)).toDateString())
+                        // // return ())
+                        return (new Date(value.payTime).toLocaleDateString().replace(/\//g, "-") + ' ' + (new Date(value.payTime)).toTimeString().substr(0, 8))
                     },
                     key: 'payTime',
                 },

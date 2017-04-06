@@ -9,8 +9,8 @@ const Actions = Reflux.createActions([
     'getPrizeList',
     'deletePrize',
     'deleteTable',
-    'setTempObj',
-    'editSng'
+    'getTempInfo',
+    'editSng',
 ]);
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
         data: {
             templates: [],
             prizeList: [],
-            tempObj: {}
+            tempObj: {},
         },
 
         onGetTempList(cb){
@@ -63,10 +63,21 @@ module.exports = {
             })
         },
 
-        onSetTempObj(temp,cb){
-            this.data.tempObj = temp;
-            this.updateComponent()
-            cb&&cb(this.data.tempObj)
+        onGetTempInfo(id,cb){
+            var t = this;
+            request('/api/table/info?data='+JSON.stringify({
+                        tableId: Number(id)
+            }))
+            .then((data)=>{
+                t.data.tempObj = data.data;
+                t.data.tempObj.signUpFee = t.data.tempObj.signUpFee / 10000;
+                t.data.tempObj.serviceFee = t.data.tempObj.serviceFee / 10000;
+                t.data.tempObj.rewards.map((item,i)=>{
+                    t.data.tempObj.rewards[i].chip = t.data.tempObj.rewards[i].chip/10000;
+                })
+                t.updateComponent()
+                cb&&cb(data.data)
+            })
         },
 
         onCreatePrize(params,cb){
@@ -103,10 +114,19 @@ module.exports = {
             var t = this;
             request('/api/prize/list')
             .then((data)=>{
-                t.data.prizeList = data.data.reverse();
-                t.updateComponent()
-                cb&&cb(data.data)
+                t.data.prizeList = data.data;
             })
+            .then(()=>{
+                request('/api/coupon/list')
+                .then((data)=>{
+                    data.data.map(function(item){
+                        t.data.prizeList.push(item);
+                    })
+                    t.updateComponent()
+                    cb&&cb(t.data.prizeList)
+                })
+            }
+            )
         },
 
         onDeletePrize(params,cb){
