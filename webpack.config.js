@@ -71,7 +71,8 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: '德扑神器',
             filename: 'index.html',
-            template: './public/index.html'
+            template: './public/index.html',
+            hash: true,
         })
     ]
 }
