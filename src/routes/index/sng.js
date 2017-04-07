@@ -85,7 +85,7 @@ class _SNG extends React.Component{
                         label="赛事名称:"
                         >
                         {getFieldDecorator('name', {
-                            rules: [{ required: true, max: 20, message: '请填写赛事名称' }],
+                            rules: [{ required: true, message: '请填写赛事名称' }],
                         })(
                             <Input/>
                         )}
