@@ -55,7 +55,7 @@ server.get('/api/charge/list',function(req,res){
     },function(err,httpResponse,body) {
         if (!err) {
             var obj = {
-                total: body.total || 0,
+                total: body.total || body.logcount,
                 data: resParse(body)
             }
             
