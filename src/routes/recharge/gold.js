@@ -53,6 +53,13 @@ class Gold extends React.Component{
                     key: 'moneyNum',
                 },
                 {
+                    title: '发放时间',
+                    render: (value) => {
+                        return (new Date(value.createTime).toLocaleDateString().replace(/\//g, "-") + ' ' + (new Date(value.createTime)).toTimeString().substr(0, 8))
+                    },
+                    key: 'createTime',
+                },
+                {
                     title: '描述',
                     dataIndex: 'changeDesc',
                     key: 'changeDesc',

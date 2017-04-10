@@ -42,7 +42,6 @@ class _SNG extends React.Component{
     }
 
     componentDidMount(){
-        var t = this;
         Actions.getTempList()
     }
 
