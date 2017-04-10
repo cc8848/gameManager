@@ -70,7 +70,7 @@ class Gold extends React.Component{
     componentDidMount(){
         Pubsub.publish('layoutCurrent','s3_2')
         Actions.getUserList();
-        Actions.getRechargeList(1,10);
+        Actions.getRechargeList(1,20);
     }
 
     search(key){
