@@ -29,7 +29,6 @@ module.exports = {
         },
 
         onAddGold(params,cb){
-            var t = this;
             request('/api/charge',{
                 method: 'POST',
                 headers: {
@@ -43,9 +42,9 @@ module.exports = {
             })
         },
 
-        onGetRechargeList(cb){
+        onGetRechargeList(page,pageSize,cb){
             var t = this;
-            request('/api/charge/list')
+            request(`/api/charge/list?pageIndex=${page}&pageSize=${pageSize}`)
             .then((data)=>{
                 t.data.chargeList = data.data;
                 t.updateComponent()

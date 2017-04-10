@@ -1,10 +1,9 @@
 import React from 'react';
 import LayoutPage from '../../components/LayoutPage'
-import { Breadcrumb,Input,Upload,Icon, Form, Row, Col, Select,DatePicker,Button,Table,Popconfirm, message, Modal, Checkbox } from 'antd';
+import { Breadcrumb,Input,Upload,Icon,Pagination, Form, Row, Col, Select,DatePicker,Button,Table,Popconfirm, message, Modal, Checkbox } from 'antd';
 import reactMixin from 'react-mixin';
 import Reflux from 'reflux';
 import Pubsub from 'pubsub-js';
-const InputGroup = Input.Group;
 const FormItem = Form.Item;
 
 import {Actions,Store} from '../../models/recharge';
@@ -71,7 +70,7 @@ class Gold extends React.Component{
     componentDidMount(){
         Pubsub.publish('layoutCurrent','s3_2')
         Actions.getUserList();
-        Actions.getRechargeList();
+        Actions.getRechargeList(1,10);
     }
 
     search(key){
@@ -128,7 +127,7 @@ class Gold extends React.Component{
 
     render(){
         var t = this;
-        const { getFieldDecorator, getFieldValue } = this.props.form;
+        const { getFieldDecorator } = this.props.form;
 
         return (
             <LayoutPage>
@@ -144,7 +143,15 @@ class Gold extends React.Component{
                 </Row>
                 <span className="tm"/>
                 <Row>
-                    <Table dataSource={t.state.Recharge.chargeList} columns={t.state.columns} />
+                    <Table dataSource={t.state.Recharge.chargeList.data} pagination={{
+                        total: t.state.Recharge.chargeList.total,
+                        pageSize: 10,
+                        defaultCurrent: 1,
+                        showQuickJumper: true,
+                        onChange: function(page, pageSize){
+                            Actions.getRechargeList(page,pageSize);
+                        }
+                    }} columns={t.state.columns} />
                 </Row>
                 <Modal 
                     visible={t.state.ModelVisible}

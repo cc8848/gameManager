@@ -10,7 +10,7 @@ server.get('/api/templates',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
@@ -28,8 +28,7 @@ server.post('/api/sng/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        console.log(body)
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
@@ -48,8 +47,7 @@ server.post('/api/sng/delete',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        console.log(body)
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
@@ -68,8 +66,7 @@ server.post('/api/table/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        console.log(body)
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
@@ -79,13 +76,12 @@ server.post('/api/table/create',function(req,res){
 
 server.get('/api/table/info',function(req,res){
     var bodyText = req.query.data
-    console.log(config.remote_server + '/pk-web/sng/temp/info?data='+ bodyText)
     request({
         url: config.remote_server + '/pk-web/sng/temp/info?data='+ bodyText,
         method: 'GET',
         json: true
     },function(err,httpResponse,body) {
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || {}))
         } else {
             res.send(jsonres(-1,'faild',{}))
@@ -103,8 +99,7 @@ server.post('/api/table/edit',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        console.log(body)
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
@@ -122,8 +117,7 @@ server.post('/api/prize/create',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        if (!!!err) {
-            console.log(body)
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
@@ -136,7 +130,7 @@ server.get('/api/prize/list',function(req,res){
         url: config.remote_server + '/pk-web/prize/list',
         json: true,
     },function(err,httpResponse,body) {
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))

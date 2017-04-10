@@ -1,5 +1,6 @@
 var server = require('../index')
 var jsonres = require('../../libs/jsonres')
+var resParse = require('../../libs/resparse')
 var request = require('request')
 var config = require('../../config')
 
@@ -9,8 +10,8 @@ server.get('/api/userlist',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
-        if (!!!err) {
-            res.send(jsonres(200,'success',body.data || []))
+        if (!err) {
+            res.send(jsonres(200,'success',resParse(body)))
         } else {
             res.send(jsonres(-1,'faild',[]))
         }
@@ -26,7 +27,6 @@ server.post('/api/charge',function(req,res){
         reasonType: 'OUTLINE',
         desc: '来自后台手工发放',
     })
-    console.log(bodyText)
     request({
         url: config.remote_server + '/pk-web/user/charge',
         method: 'POST',
@@ -35,9 +35,8 @@ server.post('/api/charge',function(req,res){
             data: bodyText
         }
     },function(err,httpResponse,body) {
-        console.log(body)
-        if (!!!err) {
-            res.send(jsonres(200,'success',body.data || []))
+        if (!err) {
+            res.send(jsonres(200,'success',resParse(body)))
         } else {
             res.send(jsonres(-1,'faild',[]))
         }
@@ -45,13 +44,22 @@ server.post('/api/charge',function(req,res){
 })
 
 server.get('/api/charge/list',function(req,res){
+    var queryText = JSON.stringify({
+        pageIndex: req.query.pageIndex,
+        pageSize: req.query.pageSize
+    });
     request({
-        url: config.remote_server + '/pk-web/user/charge/list',
+        url: config.remote_server + '/pk-web/user/charge/list?data=' + queryText,
         json: true,
-        method: 'GET',
+        method: 'GET'
     },function(err,httpResponse,body) {
-        if (!!!err) {
-            res.send(jsonres(200,'success',body.data || []))
+        if (!err) {
+            var obj = {
+                total: body.total || 0,
+                data: resParse(body)
+            }
+            
+            res.send(jsonres(200,'success',obj))
         } else {
             res.send(jsonres(-1,'faild',[]))
         }
@@ -65,7 +73,7 @@ server.get('/api/pay/list',function(req,res){
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
-        if (!!!err) {
+        if (!err) {
             res.send(jsonres(200,'success',body.data || []))
         } else {
             res.send(jsonres(-1,'faild',[]))
