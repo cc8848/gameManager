@@ -145,7 +145,7 @@ class Gold extends React.Component{
                 <Row>
                     <Table dataSource={t.state.Recharge.chargeList.data} pagination={{
                         total: t.state.Recharge.chargeList.total,
-                        pageSize: 10,
+                        pageSize: 20,
                         defaultCurrent: 1,
                         showQuickJumper: true,
                         onChange: function(page, pageSize){
