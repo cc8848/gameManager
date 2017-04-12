@@ -36,6 +36,7 @@
     "eslint": "^3.19.0",
     "eslint-plugin-react": "^6.10.3",
     "fetch-polyfill2": "0.0.3",
+    "mongoose": "^4.9.4",
     "react-scripts": "0.9.3"
   },
   "scripts": {

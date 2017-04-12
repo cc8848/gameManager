@@ -2,15 +2,25 @@ var server = require('../index')
 var jsonres = require('../../libs/jsonres')
 var request = require('request')
 var config = require('../../config')
+var resParse = require('../../libs/resparse')
 
 server.get('/api/matchlist',function(req,res){
+    var queryText = JSON.stringify({
+        pageIndex: req.query.pageIndex,
+        pageSize: req.query.pageSize
+    });
     request({
-        url: config.remote_server + '/pk-web/sng/table/list',
+        url: config.remote_server + '/pk-web/sng/table/list?data=' + queryText,
         json: true,
         method: 'GET',
     },function(err,httpResponse,body) {
         if (!err) {
-            res.send(jsonres(200,'success',body.data || []))
+            var obj = {
+                total: body.total || body.logcount,
+                data: resParse(body)
+            }
+            
+            res.send(jsonres(200,'success',obj))
         } else {
             res.send(jsonres(-1,'faild',null))
         }

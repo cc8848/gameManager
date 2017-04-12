@@ -9,9 +9,13 @@ const SNGTemp = require('./routes/sng/sngTemp');
 const Prize = require('./routes/prize');
 const Recharge = require('./routes/recharge/index');
 const Gold = require('./routes/recharge/gold');
+const Login = require('./routes/login/index');
+const GoldMobile = require('./routes/mobile/Gold');
 
 ReactDOM.render(
   <Router history={hashHistory}>
+    <Route path="/login" component={Login} />
+    <Route path="/login/:page" component={Login} />
     <Route path="/" component={Index} />
     <Route path="/sng" component={SNG} />
     <Route path="/create/sng" component={SNGTemp} />
@@ -19,5 +23,6 @@ ReactDOM.render(
     <Route path="/prize" component={Prize} />
     <Route path="/recharge" component={Recharge} />
     <Route path="/gold" component={Gold} />
+    <Route path="/gold_mobile" component={GoldMobile} />
   </Router>, document.getElementById('root')
 );

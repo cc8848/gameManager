@@ -168,7 +168,6 @@ class Index extends React.Component {
     }
 
     handleCreateSNG() {
-        var t = this;
         Actions.showSng()
     }
 
@@ -182,13 +181,13 @@ class Index extends React.Component {
         var id = param.id;
         Actions.deleteTable(id, function (data) {
             message.success('删除成功!')
-            Actions.getMatchList()
+            Actions.getMatchList(1,20);
         })
     }
 
     componentDidMount() {
         Pubsub.publish('layoutCurrent', 'm1')
-        Actions.getMatchList()
+        Actions.getMatchList(1,20);
     }
 
     cancel(e) {
@@ -233,7 +232,15 @@ class Index extends React.Component {
                 </Row>
                 <span className="tm" />
                 <Row>
-                    <Table dataSource={t.state.Index.matchList} columns={t.state.columns} />
+                    <Table dataSource={t.state.Index.matchList.data} pagination={{
+                        total: t.state.Index.matchList.total,
+                        pageSize: 20,
+                        defaultCurrent: 1,
+                        showQuickJumper: true,
+                        onChange: function(page, pageSize){
+                            Actions.getMatchList(page,pageSize);
+                        }
+                    }}  columns={t.state.columns} />
                 </Row>
 
                 <SNG visible={!!t.state.Index.sngVisible}></SNG>

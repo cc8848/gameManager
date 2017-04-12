@@ -24,8 +24,6 @@ class Recharge extends React.Component{
                 {
                     title: '充值时间',
                     render: (value)=>{
-                        // return (new Date(Number(value.payTime)).toDateString())
-                        // // return ())
                         return (new Date(value.payTime).toLocaleDateString().replace(/\//g, "-") + ' ' + (new Date(value.payTime)).toTimeString().substr(0, 8))
                     },
                     key: 'payTime',
@@ -91,11 +89,14 @@ class Recharge extends React.Component{
                 </Row>
                 <span className="tm"/>
                 <Row gutter={20}>
-                    <Col span={2}>
+                    <Col span={3}>
                         <Button icon="search" type="primary">查询</Button>
                     </Col>
-                    <Col span={2}>
+                    <Col span={3}>
                         <Button icon="ellipsis" type="primary">充值统计</Button>    
+                    </Col>
+                    <Col span={3}>
+                        <Button icon="ellipsis" type="primary">导出</Button>    
                     </Col>
                 </Row>
                 <span className="tm"/>

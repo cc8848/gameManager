@@ -14,7 +14,10 @@ module.exports = {
         listenables: [Actions],
         data: {
             userList: [],
-            chargeList: [],
+            chargeList: {
+                total: 0,
+                data: []
+            },
             payList: []
         },
 

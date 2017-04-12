@@ -110,7 +110,7 @@ class Gold extends React.Component{
                     Actions.addGold(values,function(data){
                         if (data.data === true) {
                             message.success('金币发放成功!')
-                            Actions.getRechargeList();
+                            Actions.getRechargeList(1,20);
                             t.setState({
                                 ModelVisible: false
                             })

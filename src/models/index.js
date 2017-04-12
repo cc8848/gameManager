@@ -17,24 +17,26 @@ module.exports = {
             sngVisible: false,
         },
 
-        onGetMatchList(cb){
+        onGetMatchList(page,pageSize,cb){
             var t = this;
-            request('/api/matchlist')
+            request(`/api/matchlist?pageIndex=${page}&pageSize=${pageSize}`)
             .then(function(data){
-                t.data.matchList = []
-                var _mlist = data.data;
+                t.data.matchList = {
+                    total: 0,
+                    data: []
+                }
+                var _mlist = data.data.data;
                 _mlist.map((item,index)=>{
                     item.key = index + 1;
-                    t.data.matchList.push(item);
+                    t.data.matchList.data.push(item);
                 })
-                t.data.matchList.reverse()
+                t.data.matchList.total = data.data.total;
                 t.updateComponent()
                 cb&&cb(_mlist)
             })
         },
 
         onDeleteTable(id,cb){
-            var t = this;
             request('/api/table/delete',{ 
                 method: 'POST',
                 headers: {
