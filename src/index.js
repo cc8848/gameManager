@@ -10,7 +10,7 @@ const Prize = require('./routes/prize');
 const Recharge = require('./routes/recharge/index');
 const Gold = require('./routes/recharge/gold');
 const Login = require('./routes/login/index');
-const GoldMobile = require('./routes/mobile/Gold');
+const GoldMobile = require('./routes/mobile/gold');
 
 ReactDOM.render(
   <Router history={hashHistory}>
